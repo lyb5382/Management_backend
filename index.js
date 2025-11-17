@@ -46,7 +46,7 @@ app.use('/api/business', businessRouter);
 // "호텔" 관련 API는 이쪽으로
 app.use('/api/hotels', hotelRouter);
 
-// "유저" 관련 API (유성준꺼. 걔 서버가 따로 돌면 이건 필요 없음)
+// "유저" 관련 API (user-backend꺼. 그 서버가 따로 돌면 이건 필요 없음)
 // app.use('/api/users', userRouter);
 
 // ---------------------------------
@@ -55,7 +55,7 @@ app.use('/api/hotels', hotelRouter);
 app.use((err, req, res, next) => {
     console.error('❌ 전체 에러 발생:', err.stack);
     res.status(500).json({
-        message: err.message || '서버에서 좆망 에러가 발생했습니다.',
+        message: err.message || '서버에서 에러가 발생했습니다.',
     });
 });
 
