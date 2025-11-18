@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 // 라우터 (안내데스크) Import
 import businessRouter from './src/routes/businessRouter.js';
 import hotelRouter from './src/routes/hotelRouter.js';
-import authRoutes from './src/routes/authRoutes.js'
+// import userRouter from './routes/user.router.js'; // (user-backend용 만들 거)
 
 // .env 변수 로드
 const { PORT, MONGO_URI, FRONT_ORIGIN } = process.env;
@@ -46,8 +46,8 @@ app.use('/api/business', businessRouter);
 // "호텔" 관련 API는 이쪽으로
 app.use('/api/hotels', hotelRouter);
 
-// 회원가입/로그인 (/api/auth/signup, /api/auth/login)
-app.use('/api/auth', authRoutes);
+// "유저" 관련 API (유성준꺼. 걔 서버가 따로 돌면 이건 필요 없음)
+// app.use('/api/users', userRouter);
 
 // ---------------------------------
 // (필수) 에러 핸들링 미들웨어
@@ -55,7 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use((err, req, res, next) => {
     console.error('❌ 전체 에러 발생:', err.stack);
     res.status(500).json({
-        message: err.message || '서버에서 에러가 발생했습니다.',
+        message: err.message || '서버에서 좆망 에러가 발생했습니다.',
     });
 });
 
