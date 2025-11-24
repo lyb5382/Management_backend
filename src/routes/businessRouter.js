@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { s3Uploader } from '../utils/s3Uploader.js'; // S3 업로더
 import { Business } from '../models/business.js'; // 사업자 모델
-import { User } from '../models/user.js'; // user-backend가 만들 'User' (일단 임시)
-// import { authMiddleware } from '../middlewares/auth.middleware.js'; // (나중에 만들 로그인 검증)
+import User from '../models/user.js';
+import { authMiddleware, adminAuthMiddleware } from '../utils/auth.js';
 
 const router = Router();
 
@@ -50,33 +50,62 @@ router.get('/admin/pending', async (req, res, next) => {
 
 // 관리자가 '승인' 처리 (From: 관리자 프론트)
 // (관리자만 써야 함)
-router.patch('/admin/approve/:businessId', async (req, res, next) => {
-    try {
-        const { businessId } = req.params;
-        // 1. Business 문서 상태 'approved'로 변경
-        const approvedBusiness = await Business.findByIdAndUpdate(
-            businessId,
-            { status: 'approved' },
-            { new: true }
-        );
-        if (!approvedBusiness) {
-            throw new Error('신청 내역이 없습니다.');
+router.patch('/admin/approved/:businessId',
+    authMiddleware,      // 1. 로그인했냐?
+    adminAuthMiddleware,
+    async (req, res, next) => {
+        try {
+            const { businessId } = req.params;
+            // 1. Business 문서 상태 'approved'로 변경
+            const approvedBusiness = await Business.findByIdAndUpdate(
+                businessId,
+                { status: 'approved' },
+                { new: true }
+            );
+            if (!approvedBusiness) {
+                throw new Error('신청 내역이 없습니다.');
+            }
+            // 2. 'User' 모델의 role을 'business'로 변경
+            // user-backend랑 엮이는 부분
+            const updatedUser = await User.findByIdAndUpdate(
+                approvedBusiness.user, // 
+                { role: 'business' },
+                { new: true }
+            );
+            res.status(200).json({
+                message: '승인 완료',
+                business: approvedBusiness,
+                user: updatedUser,
+            });
+        } catch (error) {
+            next(error);
         }
-        // 2. 'User' 모델의 role을 'business'로 변경
-        // user-backend랑 엮이는 부분
-        const updatedUser = await User.findByIdAndUpdate(
-            approvedBusiness.user, // 
-            { role: 'business' },
-            { new: true }
-        );
-        res.status(200).json({
-            message: '승인 완료',
-            business: approvedBusiness,
-            user: updatedUser,
-        });
-    } catch (error) {
-        next(error);
-    }
-});
+    });
+
+// 관리자가 '거부' 처리 (From: 관리자 프론트)
+router.patch('/admin/rejected/:businessId',
+    authMiddleware,      // 1. 로그인했냐?
+    adminAuthMiddleware, // 2. 관리자냐?
+    async (req, res, next) => {
+        try {
+            const { businessId } = req.params;
+            // 1. Business 문서 상태 'rejected'로 변경
+            const rejectedBusiness = await Business.findByIdAndUpdate(
+                businessId,
+                { status: 'rejected' },
+                { new: true }
+            );
+            if (!rejectedBusiness) {
+                throw new Error('신청 내역이 없습니다.');
+            }
+            // 2. (User 모델은 건드릴 필요 없음 -> 'business'가 아니니까)
+            res.status(200).json({
+                message: '거부 완료',
+                business: rejectedBusiness,
+            });
+        } catch (error) {
+            next(error);
+        }
+    });
 
 export default router;
