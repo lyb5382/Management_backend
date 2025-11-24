@@ -53,7 +53,7 @@ app.use('/api/auth', authRoutes);
 app.use((err, req, res, next) => {
     console.error('❌ 전체 에러 발생:', err.stack);
     res.status(500).json({
-        message: err.message || '서버에서 에러가 발생했습니다.',
+        message: err.message || '서버에서 좆망 에러가 발생했습니다.',
     });
 });
 
