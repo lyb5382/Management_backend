@@ -37,7 +37,6 @@ const hotelSchema = new Schema(
         // 4. (참고) 편의시설 (Amenity)
         // 만약 나중에 편의시설 모델(Amenity) 만들면
         // amenities: [{ type: Schema.Types.ObjectId, ref: 'Amenity' }]
-
         // (편의시설 쨌으니까 걍 하드코딩 배열로 박아도 됨)
         amenities_list: [
             {

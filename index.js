@@ -49,9 +49,7 @@ app.use('/api/hotels', hotelRouter);
 // 회원가입/로그인 (/api/auth/signup, /api/auth/login)
 app.use('/api/auth', authRoutes);
 
-// ---------------------------------
 // (필수) 에러 핸들링 미들웨어
-// ---------------------------------
 app.use((err, req, res, next) => {
     console.error('❌ 전체 에러 발생:', err.stack);
     res.status(500).json({
@@ -59,9 +57,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// ---------------------------------
 // 서버 실행
-// ---------------------------------
 app.listen(PORT, () => {
     console.log(`🚀 관리 백엔드 서버가 ${PORT}번 포트에서 달리는 중...`);
 });
