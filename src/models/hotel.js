@@ -1,5 +1,9 @@
 // 호텔 모델
+<<<<<<< HEAD
 import { Schema, model } from 'mongoose';
+=======
+import { Schema, model } from 'mongoose'
+>>>>>>> upstream/main
 
 const hotelSchema = new Schema(
     {
@@ -37,7 +41,10 @@ const hotelSchema = new Schema(
         // 4. (참고) 편의시설 (Amenity)
         // 만약 나중에 편의시설 모델(Amenity) 만들면
         // amenities: [{ type: Schema.Types.ObjectId, ref: 'Amenity' }]
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/main
         // (편의시설 쨌으니까 걍 하드코딩 배열로 박아도 됨)
         amenities_list: [
             {
@@ -48,6 +55,12 @@ const hotelSchema = new Schema(
     {
         timestamps: true,
     }
+<<<<<<< HEAD
 );
 
 export const Hotel = model('Hotel', hotelSchema);
+=======
+)
+
+export const Hotel = model('Hotel', hotelSchema)
+>>>>>>> upstream/main
