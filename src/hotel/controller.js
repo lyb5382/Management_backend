@@ -76,3 +76,28 @@ export const remove = async (req, res, next) => {
         next(error);
     }
 };
+
+// [관리자] 전체 목록 조회
+export const getAdminList = async (req, res, next) => {
+    try {
+        // 쿼리로 page, limit 받음 (기본값: 1페이지, 10개)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+
+        const result = await hotelService.getAllHotels(page, limit);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
+
+// [관리자] 강제 삭제
+export const forceDelete = async (req, res, next) => {
+    try {
+        const { hotelId } = req.params;
+        await hotelService.forceDeleteHotel(hotelId);
+        res.status(200).json({ message: '관리자 권한으로 호텔이 삭제되었습니다.' });
+    } catch (error) {
+        next(error);
+    }
+};

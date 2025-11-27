@@ -83,3 +83,50 @@ export const deleteHotel = async (hotelId, businessId) => {
     await Hotel.findByIdAndDelete(hotelId);
     return true;
 };
+
+// 1. [관리자] 전체 호텔 목록 조회
+export const getAllHotels = async (page = 1, limit = 10) => {
+    const skip = (page - 1) * limit;
+
+    // 전체 호텔 조회 (최신순, 페이지네이션)
+    const hotels = await Hotel.find()
+        .populate('business', 'business_name business_number') // 사업자 정보도 같이
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const total = await Hotel.countDocuments(); // 전체 개수
+
+    return { hotels, total, page, totalPages: Math.ceil(total / limit) };
+};
+
+// 2. [관리자] 호텔 강제 삭제 (소유권 체크 X)
+export const forceDeleteHotel = async (hotelId) => {
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) throw new Error('호텔이 없습니다.');
+
+    // S3 이미지 삭제 (기존 로직 재사용)
+    if (hotel.images && hotel.images.length > 0) {
+        try {
+            const keys = hotel.images.map((imageUrl) => {
+                const urlParts = new URL(imageUrl);
+                const decodedKey = decodeURIComponent(urlParts.pathname.substring(1));
+                return { Key: decodedKey };
+            });
+
+            const deleteCommand = new DeleteObjectsCommand({
+                Bucket: process.env.S3_BUCKET,
+                Delete: { Objects: keys },
+            });
+
+            await s3.send(deleteCommand);
+            console.log('🗑️ Admin: S3 호텔 이미지 강제 삭제 성공');
+        } catch (err) {
+            console.error('⚠️ Admin: S3 삭제 실패:', err);
+        }
+    }
+
+    // DB 삭제
+    await Hotel.findByIdAndDelete(hotelId);
+    return true;
+};

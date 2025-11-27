@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as hotelController from './controller.js';
 import { s3Uploader } from '../common/s3Uploader.js';
-import { authMiddleware, businessAuthMiddleware } from '../common/authMiddleware.js';
+import { authMiddleware, businessAuthMiddleware, adminAuthMiddleware } from '../common/authMiddleware.js';
 
 const router = Router();
 
@@ -46,6 +46,21 @@ router.post('/:hotelId/images',
     businessAuthMiddleware,
     s3Uploader.array('hotelImages', 10),
     hotelController.uploadImages
+);
+
+// GET /api/hotels/admin/all?page=1&limit=10
+router.get('/admin/all',
+    authMiddleware,
+    adminAuthMiddleware, // 관리자만!
+    hotelController.getAdminList
+);
+
+// 2. 호텔 강제 삭제
+// DELETE /api/hotels/admin/:hotelId
+router.delete('/admin/:hotelId',
+    authMiddleware,
+    adminAuthMiddleware, // 관리자만!
+    hotelController.forceDelete
 );
 
 export default router;
