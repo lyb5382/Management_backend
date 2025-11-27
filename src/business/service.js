@@ -79,3 +79,41 @@ export const rejectBusiness = async (businessId) => {
 
     return rejectedBusiness;
 };
+
+// 1. 관리자용 사업자 전체 목록 조회 (필터링 기능 포함)
+export const getAllBusinesses = async (status) => {
+    // status 쿼리가 있으면 그걸로 찾고, 없으면 전체 다 가져옴
+    const query = status ? { status } : {};
+
+    const businesses = await Business.find(query)
+        .populate('user', 'name email phoneNumber') // 유저 정보도 같이 봄
+        .sort({ createdAt: -1 }); // 최신순 정렬
+
+    return businesses;
+};
+
+// 2. 사업자 상세 조회
+export const getBusinessDetail = async (businessId) => {
+    const business = await Business.findById(businessId)
+        .populate('user', 'name email phoneNumber');
+
+    if (!business) {
+        throw new Error('사업자 정보가 없습니다.');
+    }
+    return business;
+};
+
+// 3. 사업자 강제 정지 (영구 정지)
+export const suspendBusiness = async (businessId) => {
+    const business = await Business.findByIdAndUpdate(
+        businessId,
+        { status: 'suspended' },
+        { new: true }
+    );
+
+    if (!business) {
+        throw new Error('사업자 정보가 없습니다.');
+    }
+
+    return business;
+};

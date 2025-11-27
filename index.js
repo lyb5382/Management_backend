@@ -4,10 +4,15 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { connectDB } from './src/config/db.js'; // DB 연결 함수
 
-// 라우터 Import (경로 바뀐 거 확인!)
+// 라우터 Import
 import businessRouter from './src/business/route.js';
 import hotelRouter from './src/hotel/route.js';
 import authRouter from './src/auth/route.js';
+import roomRouter from './src/room/route.js';
+import noticeRouter from './src/notice/route.js';
+import inquiryRouter from './src/inquiry/route.js';
+import couponRouter from './src/coupon/route.js';
+import reportRouter from './src/report/route.js';
 
 const { PORT, FRONT_ORIGIN } = process.env;
 
@@ -25,6 +30,11 @@ app.get('/api', (req, res) => { res.status(200).send('API Alive') });
 app.use('/api/business', businessRouter);
 app.use('/api/hotels', hotelRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/rooms', roomRouter);
+app.use('/api/notices', noticeRouter);
+app.use('/api/inquiries', inquiryRouter);
+app.use('/api/coupons', couponRouter);
+app.use('/api/reports', reportRouter);
 
 app.use((err, req, res, next) => {
     console.error('❌ Error:', err.stack);
