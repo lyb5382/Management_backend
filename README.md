@@ -67,3 +67,45 @@ src/
 ├── stats/          # 매출 및 현황 통계 (Aggregation)
 ├── common/         # 공용 미들웨어(Auth, S3) 및 유틸
 └── config/         # DB 연결 등 환경 설정
+
+---
+
+## 🚀 Getting Started
+
+### 1. Installation
+
+$git clone [https://github.com/hotel-web-site/Management_backend.git$](https://github.com/hotel-web-site/Management_backend.git$) cd Management_backend
+$ npm install
+
+### 2. Environment Setup (.env)
+
+루트 경로에 .env 파일을 생성하고 다음 변수를 설정하세요.
+
+PORT=4000  # Docker 환경 기준
+MONGO_URI=mongodb+srv://<YOUR_DB_URI>
+FRONT_ORIGIN=http://localhost:5173
+JWT_SECRET=<YOUR_SECRET_KEY>
+
+# AWS S3 Settings
+AWS_REGION=ap-northeast-2
+S3_BUCKET=<YOUR_BUCKET_NAME>
+AWS_ACCESS_KEY_ID=<YOUR_AWS_KEY>
+AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET>
+
+### 3. Run Server (Docker Compose)
+
+본 프로젝트는 Docker Compose를 통해 Frontend와 통합 배포 환경을 지원합니다.
+
+# Build & Run
+$ docker-compose up --build
+
+---
+
+## 📝 API Documentation
+
+API 명세는 Notion 또는 Postman Collection을 참고해주세요. (팀 내부 문서 링크)
+
+---
+
+### 👨‍💻 Developer
+- **Backend**: 이예빈 (Management & Ops Core)
