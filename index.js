@@ -14,6 +14,9 @@ import inquiryRouter from './src/inquiry/route.js';
 import couponRouter from './src/coupon/route.js';
 import reportRouter from './src/report/route.js';
 import statsRouter from './src/stats/route.js';
+import bookingRouter from './src/booking/route.js';
+import paymentRouter from './src/payment/route.js';
+import userManageRouter from './src/user-manage/route.js';
 
 const { PORT, FRONT_ORIGIN } = process.env;
 
@@ -37,6 +40,9 @@ app.use('/api/inquiries', inquiryRouter);
 app.use('/api/coupons', couponRouter);
 app.use('/api/reports', reportRouter);
 app.use('/api/stats', statsRouter);
+app.use('/api/bookings', bookingRouter);
+app.use('/api/payments', paymentRouter);
+app.use('/api/users', userManageRouter);
 
 app.use((err, req, res, next) => {
     console.error('❌ Error:', err.stack);

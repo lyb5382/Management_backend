@@ -1,4 +1,5 @@
-import { Payment, Reservation } from './model.js';
+import Payment from '../payment/model.js';
+import Reservation from '../booking/model.js'
 import Hotel from '../hotel/model.js';
 
 // 1. [사업자용] 내 호텔 매출 통계 (월별)
@@ -17,7 +18,7 @@ export const getBusinessStats = async (businessId) => {
         },
         {
             $group: {
-                _id: { 
+                _id: {
                     year: { $year: "$createdAt" }, // 연도별
                     month: { $month: "$createdAt" } // 월별로 묶어
                 },
@@ -28,9 +29,9 @@ export const getBusinessStats = async (businessId) => {
         { $sort: { "_id.year": -1, "_id.month": -1 } } // 최신순 정렬
     ]);
 
-    return { 
-        totalHotels: hotelIds.length, 
-        monthlySales 
+    return {
+        totalHotels: hotelIds.length,
+        monthlySales
     };
 };
 
@@ -44,12 +45,12 @@ export const getAdminStats = async () => {
 
     // 총 예약 건수
     const totalReservations = await Reservation.countDocuments();
-    
+
     // 총 호텔 수
     const totalHotels = await Hotel.countDocuments();
 
     // (심화) 최근 6개월 매출 추이 같은 것도 여기서 뽑으면 됨. 일단은 총계만.
-    
+
     return {
         revenue: totalRevenue[0]?.total || 0,
         reservations: totalReservations,
