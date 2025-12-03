@@ -33,3 +33,31 @@ export const updateBookingStatus = async (bookingId, businessId, status) => {
 
     return booking;
 };
+
+// [관리자] 전체 예약 목록 조회 (날짜/상태 필터링)
+export const getAdminAllBookings = async (page, limit, startDate, endDate, status) => {
+    const skip = (page - 1) * limit;
+    const query = {};
+
+    // 1. 상태 필터 (예: ?status=confirmed)
+    if (status) query.status = status;
+
+    // 2. 날짜 필터 (체크인 기준)
+    if (startDate || endDate) {
+        query.checkIn = {};
+        if (startDate) query.checkIn.$gte = new Date(startDate); // ~부터
+        if (endDate) query.checkIn.$lte = new Date(endDate);     // ~까지
+    }
+
+    const bookings = await Booking.find(query)
+        .populate('user', 'name email')
+        .populate('hotel', 'name')
+        .populate('room', 'name')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+    const total = await Booking.countDocuments(query);
+
+    return { bookings, total, page, totalPages: Math.ceil(total / limit) };
+};
