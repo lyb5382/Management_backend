@@ -30,3 +30,18 @@ export const updateStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+// [관리자] 전체 예약 조회
+export const getAdminList = async (req, res, next) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        // 필터링 쿼리 받기
+        const { startDate, endDate, status } = req.query;
+
+        const result = await bookingService.getAdminAllBookings(page, limit, startDate, endDate, status);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};

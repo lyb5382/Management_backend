@@ -84,18 +84,27 @@ export const deleteHotel = async (hotelId, businessId) => {
     return true;
 };
 
-// 1. [관리자] 전체 호텔 목록 조회
-export const getAllHotels = async (page = 1, limit = 10) => {
+// [관리자] 전체 호텔 목록 조회 (검색/필터 추가)
+export const getAllHotels = async (page = 1, limit = 10, keyword = '') => {
     const skip = (page - 1) * limit;
+    
+    // 검색 조건 (이름 or 주소에 키워드가 포함되면 검색)
+    const query = keyword 
+        ? { 
+            $or: [
+                { name: { $regex: keyword, $options: 'i' } },
+                { address: { $regex: keyword, $options: 'i' } }
+            ] 
+          } 
+        : {};
 
-    // 전체 호텔 조회 (최신순, 페이지네이션)
-    const hotels = await Hotel.find()
-        .populate('business', 'business_name business_number') // 사업자 정보도 같이
+    const hotels = await Hotel.find(query)
+        .populate('business', 'business_name business_number')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
 
-    const total = await Hotel.countDocuments(); // 전체 개수
+    const total = await Hotel.countDocuments(query);
 
     return { hotels, total, page, totalPages: Math.ceil(total / limit) };
 };

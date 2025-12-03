@@ -5,8 +5,8 @@ import { authMiddleware, adminAuthMiddleware } from '../common/authMiddleware.js
 const router = Router();
 
 // 1. 전체 회원 조회
-// GET /api/users/admin/list
-router.get('/admin/list', 
+// GET /api/users/admin/all
+router.get('/admin/all', 
     authMiddleware, 
     adminAuthMiddleware, 
     userManageController.getList

@@ -80,11 +80,11 @@ export const remove = async (req, res, next) => {
 // [관리자] 전체 목록 조회
 export const getAdminList = async (req, res, next) => {
     try {
-        // 쿼리로 page, limit 받음 (기본값: 1페이지, 10개)
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+        const keyword = req.query.keyword || ''; // 검색어 받기
 
-        const result = await hotelService.getAllHotels(page, limit);
+        const result = await hotelService.getAllHotels(page, limit, keyword);
         res.status(200).json(result);
     } catch (error) {
         next(error);
