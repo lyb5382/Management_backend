@@ -26,7 +26,10 @@ connectDB();
 
 const app = express();
 app.use(morgan('dev'));
-app.use(cors({ origin: FRONT_ORIGIN }));
+app.use(cors({ 
+    origin: process.env.FRONT_ORIGIN,
+    credentials: true
+}));
 app.use(express.json());
 
 app.get('/api', (req, res) => { res.status(200).send('API Alive') });
