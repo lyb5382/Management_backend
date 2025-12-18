@@ -31,16 +31,27 @@ export const updateStatus = async (req, res, next) => {
     }
 };
 
-// [관리자] 전체 예약 조회
+// 👇 [수정] 관리자용 전체 예약 조회 (하이브리드 모드)
 export const getAdminList = async (req, res, next) => {
     try {
+        const { role, _id } = req.user; // 로그인한 놈 정보
+
+        // 🚨 1. 사업자(Business)라면? -> 자기 예약 목록 가져오는 서비스로 토스!
+        if (role === 'business') {
+            const { status } = req.query;
+            // 이미 만들어둔 getBusinessBookings 재활용 (개이득)
+            const list = await bookingService.getBusinessBookings(_id, status);
+            return res.status(200).json(list);
+        }
+
+        // 🚨 2. 찐 관리자(Admin)라면? -> 원래 하던 대로 전체 조회
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-        // 필터링 쿼리 받기
         const { startDate, endDate, status } = req.query;
 
         const result = await bookingService.getAdminAllBookings(page, limit, startDate, endDate, status);
         res.status(200).json(result);
+
     } catch (error) {
         next(error);
     }
