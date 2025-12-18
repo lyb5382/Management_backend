@@ -1,12 +1,29 @@
 import * as reviewService from './service.js';
+import Hotel from '../hotel/model.js'
+import Review from './model.js';
 
 // 목록 조회
 export const getList = async (req, res, next) => {
     try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
-        const result = await reviewService.getAdminReviews(page, limit);
-        res.status(200).json(result);
+        const { role, _id } = req.user;
+        let query = {};
+
+        // 🚨 사업자라면? -> 내 호텔에 달린 리뷰만 가져와야 함
+        if (role === 'business') {
+            // 1. 내 호텔 ID들을 먼저 찾음
+            const myHotels = await Hotel.find({ business: _id }).select('_id');
+            const hotelIds = myHotels.map(h => h._id);
+
+            // 2. 그 호텔들에 달린 리뷰만 검색
+            query = { hotel: { $in: hotelIds } };
+        }
+
+        const reviews = await Review.find(query)
+            .populate('user', 'name email')
+            .populate('hotel', 'name')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(reviews);
     } catch (error) {
         next(error);
     }

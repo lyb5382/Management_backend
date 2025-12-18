@@ -42,3 +42,14 @@ export const toggleStatus = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getMyInfo = async (req, res, next) => {
+    try {
+        // req.user는 미들웨어가 토큰 까서 만들어준 거임
+        // 비번 빼고 돌려줌
+        const user = req.user; 
+        res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+};
