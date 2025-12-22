@@ -15,17 +15,31 @@ const allowAdminOrBusiness = (req, res, next) => {
     }
 };
 
+router.get('/',
+    authMiddleware,
+    allowAdminOrBusiness,
+    hotelController.getHotels
+);
+
 // 1. 호텔 등록
 router.post('/', authMiddleware, businessAuthMiddleware, hotelController.create);
 
 // 🚨 2. [수정] 여기가 범인! getList -> getHotels 로 변경!
 router.get('/my-hotels', authMiddleware, businessAuthMiddleware, hotelController.getHotels);
 
-// 3. 단일 호텔 조회
-router.get('/:hotelId', authMiddleware, businessAuthMiddleware, hotelController.getOne);
+// 3. 단일 호텔 조회 (관리자도 들어갈 수 있게 문지기 교체!)
+router.get('/:hotelId',
+    authMiddleware,
+    allowAdminOrBusiness, // 👈 [수정] businessOnly -> adminOrBusiness
+    hotelController.getOne
+);
 
-// 4. 호텔 수정
-router.patch('/:hotelId', authMiddleware, businessAuthMiddleware, hotelController.update);
+// 4. 호텔 수정 (관리자도 수정 저장할 수 있게 교체!)
+router.patch('/:hotelId',
+    authMiddleware,
+    allowAdminOrBusiness, // 👈 [수정] 여기도!
+    hotelController.update
+);
 
 // 5. 호텔 삭제
 router.delete('/:hotelId', authMiddleware, businessAuthMiddleware, hotelController.remove);
@@ -44,12 +58,6 @@ router.get('/admin/all',
 router.delete('/admin/:hotelId', authMiddleware, adminAuthMiddleware, hotelController.forceDelete);
 router.patch('/admin/:hotelId/recommend', authMiddleware, adminAuthMiddleware, hotelController.toggleRecommend);
 
-// 👇 [추가] 관리자가 "이거 메인에 띄워!" 하고 명령하는 버튼
-// PATCH /api/hotels/admin/:hotelId/recommend
-router.patch('/admin/:hotelId/recommend',
-    authMiddleware,
-    adminAuthMiddleware, // 관리자만 가능
-    hotelController.toggleRecommend
-);
+router.patch('/admin/:hotelId/status', authMiddleware, adminAuthMiddleware, hotelController.updateStatus);
 
 export default router;
